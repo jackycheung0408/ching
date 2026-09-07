@@ -1,6 +1,6 @@
 <title>成渝吃貨局作戰室</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;900&family=Ma+Shan+Zheng&family=JetBrains+Mono:wght@400;500;700&display=swap');
+/* 全離線設計：不載入任何外部字型/資源，出發後沒網路也能整頁正常顯示（地圖連結本身當然還是要連網才能開） */
 
 :root{
   --ink:#1c1a1f;
@@ -57,12 +57,12 @@
 body{
   background:var(--paper);
   color:var(--ink);
-  font-family:'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif;
+  font-family:'PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;
   line-height:1.55;
   -webkit-font-smoothing:antialiased;
 }
 .wrap{max-width:720px;margin:0 auto;padding:0 0 64px}
-.mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.mono{font-family:ui-monospace,'SF Mono',Consolas,monospace;font-variant-numeric:tabular-nums}
 
 /* ---------- header ---------- */
 header.top{
@@ -75,7 +75,7 @@ header.top{
   font-weight:700;margin:0 0 6px;
 }
 h1{
-  font-family:'Ma Shan Zheng','Noto Sans TC',cursive;
+  font-family:'Heiti TC','PingFang TC',sans-serif;letter-spacing:.04em;
   font-size:42px;line-height:1.1;margin:0 0 10px;color:var(--ink);
   text-wrap:balance;font-weight:400;
 }
@@ -89,7 +89,7 @@ h1{
   background:var(--surface);border:1px solid var(--line);border-radius:10px;
   padding:10px 8px;text-align:center;box-shadow:var(--shadow);
 }
-.stat b{display:block;font-size:19px;font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+.stat b{display:block;font-size:19px;font-family:ui-monospace,'SF Mono',Consolas,monospace;font-variant-numeric:tabular-nums}
 .stat span{display:block;font-size:10.5px;color:var(--muted);margin-top:2px;letter-spacing:.02em}
 
 /* ---------- must-not-miss ticker ---------- */
@@ -135,7 +135,7 @@ section.day.active{display:block}
   padding:10px 12px;margin-bottom:18px;box-shadow:var(--shadow);
 }
 .delaybar .lbl{font-size:11.5px;color:var(--muted);white-space:nowrap}
-.delaybar .val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;color:var(--jade);min-width:52px;text-align:center}
+.delaybar .val{font-family:ui-monospace,'SF Mono',Consolas,monospace;font-weight:700;font-size:13px;color:var(--jade);min-width:52px;text-align:center}
 .delaybar button{
   border:1px solid var(--line);background:var(--surface-2);color:var(--ink);
   font-family:inherit;font-size:12px;font-weight:700;border-radius:8px;padding:5px 9px;cursor:pointer;
@@ -173,7 +173,7 @@ section.day.active{display:block}
   background:transparent;border:none;box-shadow:none;padding:2px 0 2px 2px;
 }
 .row1{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.time{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;color:var(--ink)}
+.time{font-family:ui-monospace,'SF Mono',Consolas,monospace;font-weight:700;font-size:14px;color:var(--ink)}
 .item.transit .time{font-size:12px;color:var(--muted);font-weight:500}
 .dur{font-size:11px;color:var(--muted);background:var(--surface-2);border-radius:6px;padding:1px 6px}
 .badge{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:6px;letter-spacing:.02em}
@@ -230,6 +230,19 @@ section.day.active{display:block}
 .refitem b{display:block;font-size:13px;margin-bottom:2px}
 .refitem .note{color:var(--ink-soft)}
 
+/* ---------- cheat sheet ---------- */
+.cheat{
+  background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:11px 13px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:var(--shadow);
+}
+.cheat .txt{font-size:13px;color:var(--ink)}
+.cheat .txt small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.cheat button{
+  flex:none;border:1px solid var(--jade);background:transparent;color:var(--jade);
+  font-family:inherit;font-weight:700;font-size:11.5px;border-radius:8px;padding:6px 12px;cursor:pointer;
+}
+.cheat button.copied{background:var(--jade);color:var(--surface);border-color:var(--jade)}
+
 footer{padding:26px 20px 10px;text-align:center;color:var(--muted);font-size:11.5px}
 </style>
 
@@ -270,7 +283,12 @@ footer{padding:26px 20px 10px;text-align:center;color:var(--muted);font-size:11.
     </div>
   </section>
 
-  <footer>高德連結需在有網路環境開啟 · 09/14 標示「PM 猜測」的行程請兄弟們現場再確認 · 玩得開心，兄弟</footer>
+  <section class="refs">
+    <h3>📋 在地溝通小抄（點右邊按鈕直接複製）</h3>
+    <div class="reflist" id="cheatList"></div>
+  </section>
+
+  <footer>高德連結需在有網路環境開啟，其餘整頁內容離線也能正常顯示 · 09/14 已依南岸區動線重排，出發前跟兄弟們再對一次 · 玩得開心，兄弟</footer>
 </div>
 
 <script>
@@ -336,29 +354,33 @@ const DAYS = [
       {t:"12:20", dur:"63分", type:"flight", crit:true, loc:"高鐵 G8617：成都東站 → 沙坪壩站", act:"攜程訂單實際車次，13:23抵達沙坪壩站（不是原計畫的重慶北站）", map:""},
       {t:"13:23", dur:"40分", type:"transit", loc:"沙坪壩站 → 解放碑飯店", act:"抵達站點不同了，導航直接搜飯店名稱比較保險", map:""},
       {t:"14:03", dur:"20分", type:"hotel", loc:"解放碑飯店 Check-in", act:"湖廣·隱序墅邸（解放碑洪崖洞店），二府衙湖廣洋房2號樓，小什字地鐵站5B口步行280米", map:"https://surl.amap.com/dtg0WKq51S9"},
-      {t:"14:25", dur:"175分", type:"attraction", loc:"自由活動／回房休息", act:"多出來的空檔，可以先去下方口袋名單挑一個地方晃晃，或回房補個眠", map:""},
+      {t:"14:25", dur:"145分", type:"attraction", loc:"自由活動／回房休息", act:"多出來的空檔，可以先去下方口袋名單挑一個地方晃晃，或回房補個眠", map:""},
+      {t:"16:50", dur:"30分", type:"transit", mode:"metro", loc:"飯店 → 李子壩站", act:"直接搭2號線輕軌過去，本身就是這段行程的一部分", map:""},
       {t:"17:20", dur:"90分", type:"attraction", loc:"李子壩站", act:"觀看輕軌穿樓奇景、江邊拍照", map:"", buzz:"免費網紅打卡點，2號線輕軌固定間隔穿樓而過，對面觀景台是最佳機位，傍晚人潮最多但也最好拍"},
-      {t:"18:50", dur:"30分", type:"transit", loc:"車程", act:"", map:""},
+      {t:"18:50", dur:"30分", type:"transit", loc:"華一坡蓉姐", act:"", map:""},
       {t:"19:20", dur:"90分", type:"food", loc:"華一坡蓉姐", act:"", map:"", buzz:"同體系「珮姐老火鍋」曾拿下重慶排隊王、火鍋百強賽第一名，重慶本地人普遍認可，江景加分"},
-      {t:"20:50", dur:"30分", type:"transit", loc:"車程", act:"", map:""},
+      {t:"20:50", dur:"30分", type:"transit", loc:"我在重慶等你", act:"", map:""},
       {t:"21:20", dur:"120分", type:"bar", loc:"我在重慶等你", act:"livehouse", map:""},
-      {t:"23:20", dur:"20分", type:"transit", loc:"酒吧 → 飯店", act:"", map:""},
+      {t:"23:20", dur:"20分", type:"transit", loc:"飯店", act:"", map:""},
     ]
   },
   {
-    date:"09/14", dow:"一", label:"老街＋演出日", city:"重慶", note:"這天原表格多處空白，以下標「PM猜測」的行程請現場再確認／可隨時換成下方備案",
+    date:"09/14", dow:"一", label:"南岸老街＋演出日", city:"重慶", note:"這天原表格是空的，已改依「彈子石老街／1949大劇院」同在南岸區的動線重新排過，方向對了，細節出發前再跟兄弟們對一次",
     items:[
-      {t:"9:30", dur:"45分", type:"transit", guess:true, loc:"飯店 → 彈子石老街", act:"", map:""},
-      {t:"10:15", dur:"120分", type:"attraction", guess:true, loc:"彈子石老街", act:"逛老街、江邊拍照", map:""},
-      {t:"12:15", dur:"20分", type:"transit", guess:true, loc:"彈子石老街 → 午餐地點", act:"", map:""},
-      {t:"12:35", dur:"150分", type:"food", guess:true, loc:"阿福板凳麵 或 山城老堂口", act:"午餐＋周邊古著店 Imagine Vintage 逛街，午餐後可留一小時逛街", map:""},
-      {t:"14:00", dur:"90分", type:"attraction", crit:true, loc:"1949 大劇院", act:"演出時段別遲到，建議提早20分鐘入場", map:"", buzz:"大型沉浸式紅色實景劇，視覺與場面調度評價普遍不錯，票價偏貴但體驗感是這趟少見的「劇場級」項目"},
-      {t:"15:30", dur:"", type:"transit", loc:"車程", act:"", map:""},
-      {t:"17:35", dur:"30分", type:"coffee", loc:"巴浪樹林咖啡", act:"", map:""},
-      {t:"18:05", dur:"120分", type:"transit", loc:"車程", act:"", map:""},
-      {t:"20:05", dur:"25分", type:"transit", guess:true, loc:"移動 → 晚餐地點", act:"", map:""},
-      {t:"20:30", dur:"120分", type:"food", guess:true, loc:"田棒棒火鍋 或 淑芬掌中寶串串", act:"最後一晚重慶正餐，吃完可散步到洪崖洞夜景收尾", map:""},
-      {t:"22:00", dur:"5分", type:"hotel", crit:true, loc:"告知送機司機資訊", act:"攜程訂單要求22:00前完成，隔天06:20飯店有商務6座來接，記得先設鬧鐘處理", map:""},
+      {t:"9:30", dur:"35分", type:"transit", loc:"彈子石老街", act:"從解放碑過江到南岸區", map:""},
+      {t:"10:05", dur:"130分", type:"attraction", loc:"彈子石老街", act:"逛老街、Imagine Vintage 古著店（門口常有 open jam）、江邊拍照", map:""},
+      {t:"12:15", dur:"5分", type:"transit", mode:"walk", loc:"阿福板凳麵", act:"同一條老街上，走過去就到，不用打車", map:""},
+      {t:"12:20", dur:"100分", type:"food", loc:"阿福板凳麵", act:"午餐，吃完老街範圍內可以再多逛一下", map:""},
+      {t:"14:00", dur:"90分", type:"attraction", crit:true, loc:"1949 大劇院", act:"跟彈子石老街同在南岸區，演出時段別遲到，建議提早20分鐘入場", map:"", buzz:"大型沉浸式紅色實景劇，視覺與場面調度評價普遍不錯，票價偏貴但體驗感是這趟少見的「劇場級」項目"},
+      {t:"15:30", dur:"5分", type:"hotel", crit:true, loc:"告知送機司機資訊", act:"攜程訂單要求22:00前完成，趁現在有空檔先處理掉，不要拖到晚上忘記", map:""},
+      {t:"15:35", dur:"25分", type:"transit", loc:"端艾堂 或 巴士足道", act:"按摩歇腳，順路安排在回程路上", map:""},
+      {t:"15:55", dur:"90分", type:"food", loc:"端艾堂 或 巴士足道", act:"按摩", map:""},
+      {t:"17:25", dur:"20分", type:"transit", loc:"巴浪樹林咖啡", act:"", map:""},
+      {t:"17:45", dur:"40分", type:"coffee", loc:"巴浪樹林咖啡", act:"", map:""},
+      {t:"18:25", dur:"25分", type:"transit", loc:"晚餐地點", act:"", map:""},
+      {t:"18:50", dur:"120分", type:"food", loc:"田棒棒火鍋 或 淑芬掌中寶串串", act:"最後一晚重慶正餐，選解放碑周邊的分店比較順路", map:""},
+      {t:"20:50", dur:"10分", type:"transit", mode:"walk", loc:"洪崖洞", act:"解放碑附近，步行可達，吃完飯散步收尾", map:""},
+      {t:"21:00", dur:"60分", type:"attraction", loc:"洪崖洞夜景", act:"這趟壓軸夜景", map:""},
     ]
   },
   {
@@ -405,9 +427,16 @@ const BACKUP = {
 };
 
 const TYPE_META = {
-  flight:{ic:"✈️"}, transit:{ic:"🚗"}, hotel:{ic:"🛏️"}, food:{ic:"🍜"},
+  flight:{ic:"✈️"}, hotel:{ic:"🛏️"}, food:{ic:"🍜"},
   coffee:{ic:"☕"}, bar:{ic:"🍻"}, attraction:{ic:"📍"},
 };
+// every leg defaults to 打車（滴滴6座），除非明確標成地鐵／步行——這趟基本上沒有人要背包走路
+const TRANSIT_MODE = {
+  car:{ic:"🚕", label:"打車"},
+  metro:{ic:"🚇", label:"地鐵／輕軌"},
+  walk:{ic:"🚶", label:"步行"},
+};
+function modeInfo(it){ return TRANSIT_MODE[it.mode || 'car']; }
 
 function loadDone(){ try{ return JSON.parse(localStorage.getItem('trip-done')||'{}'); }catch(e){ return {}; } }
 function saveDone(d){ try{ localStorage.setItem('trip-done', JSON.stringify(d)); }catch(e){} }
@@ -491,7 +520,7 @@ function render(){
       const isDone = !!done[key];
       const isTransit = it.type === 'transit';
       if(!isTransit){ totalStops++; stopNo++; }
-      const meta = TYPE_META[it.type] || {ic:'•'};
+      const meta = isTransit ? modeInfo(it) : (TYPE_META[it.type] || {ic:'•'});
       const f = flow[ii];
       const link = mapUrl(it);
       itemsHtml += `
@@ -501,8 +530,8 @@ function render(){
               ${!isTransit?`<span class="ord">第${stopNo}站</span>`:''}
               <span class="time">${meta.ic} ${fmtMin(f.displayed)}</span>
               ${it.dur?`<span class="dur">${it.dur}</span>`:''}
+              ${isTransit?`<span class="dur">${meta.label}</span>`:''}
               ${it.crit?'<span class="badge crit">必達</span>':''}
-              ${it.guess?'<span class="badge guess">PM猜測</span>':''}
             </div>
             <div class="loc">${it.loc}</div>
             ${it.act?`<div class="act">${it.act}</div>`:''}
@@ -590,6 +619,41 @@ function updateCountdown(){
   const hrs = Math.floor((diffMs % 86400000) / 3600000);
   el.textContent = days > 0 ? `${days}天${hrs}時` : `${hrs}時`;
 }
+
+// ---- 在地溝通小抄：叫車/導航常會需要複製貼上的中文地址跟句子 ----
+const CHEATS = [
+  {label:"成都飯店地址", note:"貼給滴滴司機或高德導航", text:"青羊區順城大街269號富力中心B2座 成都富力U one·逸嵐（春熙路天府廣場店）"},
+  {label:"重慶飯店地址", note:"貼給滴滴司機或高德導航", text:"渝中區解放碑 二府衙湖廣洋房2號樓 湖廣·隱序墅邸（解放碑洪崖洞店）"},
+  {label:"叫6人座用語", note:"滴滴出行下單備註／跟司機說", text:"師傅您好，我們5個人有行李，麻煩叫6座商務車"},
+  {label:"問路用語", note:"重慶地形立體，導航失靈時直接問人", text:"師傅／老闆，請問到解放碑怎麼走比較快？"},
+  {label:"找分店用語", note:"高德搜不到指定分店時附近問人可以這樣講", text:"請問附近有沒有一家叫這個名字的店？"},
+  {label:"退房叫車用語", note:"09/15 清晨退房用，讓司機知道趕飛機", text:"麻煩師傅，我們要趕早班機，能不能準時到，謝謝！"},
+];
+function renderCheats(){
+  const list = document.getElementById('cheatList');
+  if(!list) return;
+  list.innerHTML = CHEATS.map((c, i) => `
+    <div class="cheat">
+      <div class="txt">${c.text}<small>${c.label} · ${c.note}</small></div>
+      <button data-i="${i}">複製</button>
+    </div>`).join('');
+  list.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const text = CHEATS[+btn.dataset.i].text;
+      try{
+        await navigator.clipboard.writeText(text);
+      }catch(e){
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); }catch(e2){}
+        document.body.removeChild(ta);
+      }
+      btn.textContent = '已複製'; btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '複製'; btn.classList.remove('copied'); }, 1500);
+    });
+  });
+}
+renderCheats();
 
 render();
 updateCountdown();
